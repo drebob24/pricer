@@ -8,21 +8,25 @@ from typing import Optional
 Save for later, regex to find end unit in name of item:      [,\/]\s*(\d+,*\d*)\s*(\w+)$
 '''
 
-def grab_rimi_html() -> BeautifulSoup:
-    response = requests.get("https://www.rimi.lt/e-parduotuve/lt/paieska?currentPage=3&pageSize=20&query=tortas")
+def grab_rimi_html() -> Optional[BeautifulSoup]:
+    try:
+        response = requests.get("https://www.rimi.lt/e-parduotuve/lt/paieska?currentPage=3&pageSize=20&query=tortas")
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e: 
+        raise ValueError(f"Error grabbing HTML: {e} :Rimi")
     soup_data = BeautifulSoup(response.text, "html.parser")
     if soup_data:
         return soup_data
     else:
-        raise ValueError("No html data found")
+        raise ValueError("Empty Return or Invalid HTML: Rimi")
 
 
-def extract_rimi_product_containers(raw_data: BeautifulSoup) -> BeautifulSoup:
+def extract_rimi_product_containers(raw_data: BeautifulSoup) -> Optional[BeautifulSoup]:
     product_containers = raw_data.find_all("div", class_="js-product-container card -horizontal-for-mobile")
     if product_containers:
         return product_containers
     else:
-        raise ValueError("No product data found")
+        raise ValueError("No product data found: Rimi")
     
 
 def get_unit_price(product_container: BeautifulSoup) -> Optional[list]:
@@ -31,7 +35,7 @@ def get_unit_price(product_container: BeautifulSoup) -> Optional[list]:
     if price_per:
         found_price = re.search(r'^(.+)\n\s*.*\/(\w*\.*)$', price_per)
     else:
-        raise ValueError("No price_per found")
+        raise ValueError("No price_per found: Rimi")
     if found_price:
         unit_price, unit = found_price.group(1), found_price.group(2)
         unit_price = unit_price.replace(",", ".")
@@ -67,7 +71,7 @@ def get_card_price(product_container: BeautifulSoup) -> float:
         euro = card_price.find("span").get_text(strip=True)
         cents = card_price.find("sup").get_text(strip=True)
     else:
-        raise ValueError("No card_price found")
+        raise ValueError("No card_price found: Rimi")
     return float(euro + "." + cents)
 
 

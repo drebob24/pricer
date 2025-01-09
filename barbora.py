@@ -2,25 +2,39 @@ import requests
 import json
 import re
 from bs4 import BeautifulSoup
+from typing import List, Optional
 
 
-def grab_barbora_products():
-    response = requests.get("https://barbora.lt/paieska?q=mint")
+def grab_barbora_products() -> Optional[BeautifulSoup]:
+    try:
+        response = requests.get("https://barbora.lt/paieska?q=pergale")
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e: 
+        raise ValueError(f"Error grabbing HTML: {e} :Barbora")
     soup_data = BeautifulSoup(response.text, "html.parser")
-    return soup_data
+    if soup_data:
+        return soup_data
+    else:
+        raise ValueError("Empty Return or Invalid HTML: Barbora")
 
 
-def extract_barbora_items(raw_data):
-    raw_data = raw_data.find("script", string=re.compile(r"window\.b_productList"))
-    if raw_data:
-        page_content = raw_data.string
+def extract_barbora_items(raw_data: BeautifulSoup) -> Optional[List[dict]]:
+    script_tag = raw_data.find("script", string=re.compile(r"window\.b_productList"))
+    if script_tag:
+        page_content = script_tag.string
         pattern = r"window\.b_productList\s*=\s*(.*);"
         match = re.search(pattern, page_content)
-    items = match.group(1)
-    return json.loads(items)
+        if match:
+            items = match.group(1)
+            return json.loads(items)
+        else:
+            raise ValueError("No productList found in <script>: Barbora")
+    else:
+        raise ValueError("No productList <script> found: Barbora")
+    
 
 
-def parse_barbora_data(products, amount=5):
+def parse_barbora_data(products: List[dict], amount=5) -> list:
     '''
     amount is for future proofing if functionality to allow the user to choose how many items to grab is added.
     Would need to be capped at 52 because that's how many items are returned per page
