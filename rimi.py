@@ -8,9 +8,9 @@ from typing import Optional
 Save for later, regex to find end unit in name of item:      [,\/]\s*(\d+,*\d*)\s*(\w+)$
 '''
 
-def grab_rimi_html() -> Optional[BeautifulSoup]:
+def grab_rimi_html(item) -> Optional[BeautifulSoup]:
     try:
-        response = requests.get("https://www.rimi.lt/e-parduotuve/lt/paieska?currentPage=3&pageSize=20&query=tortas")
+        response = requests.get(f"https://www.rimi.lt/e-parduotuve/lt/paieska?query={item}")
         response.raise_for_status()
     except requests.exceptions.RequestException as e: 
         raise ValueError(f"Error grabbing HTML: {e} :Rimi")
@@ -119,14 +119,17 @@ def parse_rimi_data(product_data: BeautifulSoup, amount=5) -> list:
     return item_list
 
 
-def get_rimi():
-    page_data = grab_rimi_html()
+def get_rimi(search_item):
+    page_data = grab_rimi_html(search_item)
     container_data = extract_rimi_product_containers(page_data)
     product_list = parse_rimi_data(container_data)
-    print_html(product_list)
+    return product_list
 
 
 def print_html(html):
+    '''
+    Currently only used for troubleshooting, to be removed?
+    '''
     with open("rimi_items.json", "w") as save:
         json.dump(html, save, indent=2)
 

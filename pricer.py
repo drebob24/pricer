@@ -1,3 +1,6 @@
+from arg_parser import get_args
+from barbora import get_barbora
+from rimi import get_rimi
 
 
 def main():
@@ -20,6 +23,13 @@ def main():
         -Save history of price data?
     -Create list in program    
     '''
+    args = get_args()
+
+    if args.search:
+        barbora_list = get_barbora(args.search)
+        rimi_list = get_rimi(args.search)
+        print(barbora_list)
+        print(rimi_list)
 
 
 

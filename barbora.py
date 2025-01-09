@@ -5,9 +5,9 @@ from bs4 import BeautifulSoup
 from typing import List, Optional
 
 
-def grab_barbora_products() -> Optional[BeautifulSoup]:
+def grab_barbora_products(items) -> Optional[BeautifulSoup]:
     try:
-        response = requests.get("https://barbora.lt/paieska?q=pergale")
+        response = requests.get(f"https://barbora.lt/paieska?q={items}")
         response.raise_for_status()
     except requests.exceptions.RequestException as e: 
         raise ValueError(f"Error grabbing HTML: {e} :Barbora")
@@ -64,14 +64,17 @@ def parse_barbora_data(products: List[dict], amount=5) -> list:
     return items
 
 
-def get_barbora():
-    page_data = grab_barbora_products()
+def get_barbora(search_item):
+    page_data = grab_barbora_products(search_item)
     product_list = extract_barbora_items(page_data)
     cleaned_list = parse_barbora_data(product_list)
-    print_html(cleaned_list)
+    return cleaned_list
 
 
 def print_html(html):
+    '''
+    Currently only used for troubleshooting, to be removed?
+    '''
     with open("barbora_items.json", "w") as save:
         json.dump(html, save, indent=2)
 
