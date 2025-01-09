@@ -30,32 +30,43 @@ def main():
     if args.search:
         barbora_list = get_barbora(args.search)
         rimi_list = get_rimi(args.search)
-        full_list = sort_lists(barbora_list, rimi_list)
-        cheapest, options_list = generate_results(full_list)
-        print(create_cheapest_text(cheapest))
-        print(create_options_text(options_list))
+        cheapest_list, options_list = sort_lists(barbora_list, rimi_list, args.order)
+        cheapest_list, options_list = generate_item_text(cheapest_list), generate_item_text(options_list)
+        print(create_cheapest_output(cheapest_list))
+        print(create_options_output(options_list))
 
 
-def sort_lists(list_a, list_b):
-    sorted_list = sorted(list_a + list_b, key=lambda x: (x["list_price"],
-                                                         x["unit_price"],
-                                                         x["title"]))
-    return sorted_list
+def sort_lists(list_a, list_b, order):
+    if order == "list":
+        sorted_list = sorted(list_a + list_b, key=lambda x: (x["list_price"],
+                                                            x["unit_price"],
+                                                            x["title"]))
+    if order == "unit":
+        sorted_list = sorted(list_a + list_b, key=lambda x: (x["unit_price"],
+                                                            x["title"]))
+    i = 0
+    cheapest_price = sorted_list[0][f"{order}_price"]
+    for item in sorted_list:
+        if item[f"{order}_price"] > cheapest_price:
+            break
+        i += 1
+    return sorted_list[0:i], sorted_list[i:]
 
 
-def generate_results(item_list):
-    info = [f"{item["title"]}:\n{item["list_price"]} € at {item["store"]}" for item in item_list]
-    return info[0], info[1:]
+def generate_item_text(item_list):
+    return [f"{item["title"]}:\n{item["list_price"]} € ({item["unit_price"]} €/{item["unit"]}) at {item["store"]}" for item in item_list]
 
 
-def create_cheapest_text(item):
-    return f"The cheapest item is:\n{item}\n"
+def create_cheapest_output(items):
+    if len(items) == 1:
+        return f"The cheapest item is:\n{"\n".join(items)}\n"
+    else:
+        return f"The cheapest items are:\n{"\n".join(items)}\n"
+    
 
-
-def create_options_text(options):
+def create_options_output(options):
     options_text = "\n".join(options)
     return f"Other options:\n{options_text}"
-
 
 
 
