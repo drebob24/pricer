@@ -75,7 +75,7 @@ def get_card_price(product_container: BeautifulSoup) -> float:
     return float(euro + "." + cents)
 
 
-def organize_rimi_data(name: str, list_price: str, retail_price: str, unit_price: list) -> dict:
+def organize_rimi_data(name: str, list_price: float, retail_price: float, unit_price: list) -> dict:
     item = {}
     item["title"] = name
     item["list_price"] = list_price
@@ -105,10 +105,11 @@ def parse_rimi_data(product_data: BeautifulSoup, amount=5) -> list:
         if listed_price:
             retail_price = get_card_price(product)
             on_sale = True
-        retail_price = get_old_price(product)
-        if retail_price:
-            listed_price = get_card_price(product)
-            on_sale = True
+        else:
+            retail_price = get_old_price(product)
+            if retail_price:
+                    listed_price = get_card_price(product)
+                    on_sale = True
         if not on_sale:
             listed_price = get_card_price(product)
             retail_price = listed_price
