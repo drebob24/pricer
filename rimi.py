@@ -2,13 +2,14 @@ import requests
 import json
 import re
 from bs4 import BeautifulSoup
+from typing import Optional
 
 '''
 Save for later, regex to find end unit in name of item:      [,\/]\s*(\d+,*\d*)\s*(\w+)$
 '''
 
-def grab_rimi_html():
-    response = requests.get("https://www.rimi.lt/e-parduotuve/lt/paieska?currentPage=3&pageSize=20&query=pyragas")
+def grab_rimi_html() -> BeautifulSoup:
+    response = requests.get("https://www.rimi.lt/e-parduotuve/lt/paieska?currentPage=3&pageSize=20&query=tortas")
     soup_data = BeautifulSoup(response.text, "html.parser")
     if soup_data:
         return soup_data
@@ -16,7 +17,7 @@ def grab_rimi_html():
         raise ValueError("No html data found")
 
 
-def extract_rimi_product_containers(raw_data):
+def extract_rimi_product_containers(raw_data: BeautifulSoup) -> BeautifulSoup:
     product_containers = raw_data.find_all("div", class_="js-product-container card -horizontal-for-mobile")
     if product_containers:
         return product_containers
@@ -24,7 +25,7 @@ def extract_rimi_product_containers(raw_data):
         raise ValueError("No product data found")
     
 
-def get_unit_price(product_container):
+def get_unit_price(product_container: BeautifulSoup) -> Optional[list]:
     price_per = product_container.find("p", class_="card__price-per")
     price_per = price_per.get_text(strip=True)
     if price_per:
@@ -37,30 +38,30 @@ def get_unit_price(product_container):
         return [float(unit_price), unit]
     else:
         found_price = re.search(r'Šiuo metu prekės nėra', price_per)
-        return False
+        return None
 
 
-def get_discount_price(product_container):
+def get_discount_price(product_container: BeautifulSoup) -> Optional[float]:
     discount_price = product_container.find("div", class_="price-label__price")
     if discount_price:
         euro, cents = [span.get_text(strip=True) for span in discount_price.find_all("span", class_=["major", "cents"])]
         current_price = euro + "." + cents
+        return float(current_price)
     else:
-        current_price = False
-    return float(current_price)
+        return None
+    
 
-
-def get_old_price(product_container):
+def get_old_price(product_container: BeautifulSoup) -> Optional[float]:
     old_price = product_container.find("div", class_="old-price-tag card__old-price")
     if old_price:
         retail_price = old_price.find("span").get_text(strip=True)
         retail_price = retail_price[:-1].replace(",", ".")
+        return float(retail_price)
     else:
-        retail_price = False
-    return float(retail_price)
+        return None
+    
 
-
-def get_card_price(product_container):
+def get_card_price(product_container: BeautifulSoup) -> float:
     card_price = product_container.find("div", class_="price-tag card__price")
     if card_price:
         euro = card_price.find("span").get_text(strip=True)
@@ -70,7 +71,7 @@ def get_card_price(product_container):
     return float(euro + "." + cents)
 
 
-def organize_rimi_data(name: str, list_price: str, retail_price: str, unit_price: list):
+def organize_rimi_data(name: str, list_price: str, retail_price: str, unit_price: list) -> dict:
     item = {}
     item["title"] = name
     item["list_price"] = list_price
@@ -81,7 +82,7 @@ def organize_rimi_data(name: str, list_price: str, retail_price: str, unit_price
     return item
 
 
-def parse_rimi_data(product_data, amount=5):
+def parse_rimi_data(product_data: BeautifulSoup, amount=5) -> list:
     '''
     amount is for future proofing if functionality to allow the user to choose how many items to grab is added.
     Would need to be capped at 20 because that's how many items are returned per page
@@ -93,7 +94,7 @@ def parse_rimi_data(product_data, amount=5):
             break
         on_sale = False
         per_price = get_unit_price(product)
-        #Skip item if False returned -> indicates out of stock
+        #Skip item if None returned -> indicates out of stock
         if not per_price:
             continue
         listed_price = get_discount_price(product)
