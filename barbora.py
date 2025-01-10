@@ -28,11 +28,18 @@ def extract_barbora_items(raw_data: BeautifulSoup) -> Optional[List[dict]]:
             items = match.group(1)
             return json.loads(items)
         else:
-            raise ValueError("No productList found in <script>: Barbora")
+            raise ValueError("No productList found in tag <script>: Barbora")
     else:
-        raise ValueError("No productList <script> found: Barbora")
+        raise ValueError("No productList <script> tag found: Barbora")
     
 
+def check_no_results(html_data: BeautifulSoup) -> bool:
+    warning_page = html_data.select_one('div.b-alert--warning:-soup-contains("neradome")')
+    if warning_page:
+        return True
+    else:
+       return False
+    
 
 def parse_barbora_data(products: List[dict], amount=5) -> list:
     '''
@@ -64,10 +71,18 @@ def parse_barbora_data(products: List[dict], amount=5) -> list:
     return items
 
 
-def get_barbora(search_item):
+def get_barbora(search_item: str) -> list:
     page_data = grab_barbora_products(search_item)
-    product_list = extract_barbora_items(page_data)
+    try:
+        product_list = extract_barbora_items(page_data)
+    except ValueError as e:
+        if check_no_results(page_data):
+            print(f"No results found for '{search_item}': Barbora")
+        else:
+            print(f"ERROR: {e}")
+        return []
     cleaned_list = parse_barbora_data(product_list)
+    # print_html(page_data)
     return cleaned_list
 
 
@@ -75,8 +90,10 @@ def print_html(html):
     '''
     Currently only used for troubleshooting, to be removed?
     '''
-    with open("barbora_items.json", "w") as save:
-        json.dump(html, save, indent=2)
+    # with open("barbora_items.json", "w") as save:
+    #     json.dump(html, save, indent=2)
+    with open("barbora.html", "w") as f:
+        f.write(html.prettify())
 
 
 if __name__ == "__main__":

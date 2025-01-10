@@ -32,10 +32,13 @@ def main():
         print("Barbora search completed")
         rimi_list = get_rimi(args.search)
         print("Rimi search completed\n")
-        cheapest_list, options_list = sort_lists(barbora_list, rimi_list, args.order)
-        cheapest_list, options_list = generate_item_text(cheapest_list), generate_item_text(options_list)
-        print(create_cheapest_output(cheapest_list))
-        print(create_options_output(options_list))
+        if barbora_list or rimi_list:
+            cheapest_list, options_list = sort_lists(barbora_list, rimi_list, args.order)
+            cheapest_list, options_list = generate_item_text(cheapest_list), generate_item_text(options_list)
+            print(create_cheapest_output(cheapest_list))
+            print(create_options_output(options_list))
+        else:
+            print(f"No Results for search: '{args.search}'")
 
 
 def sort_lists(list_a, list_b, order):

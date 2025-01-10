@@ -29,7 +29,7 @@ def extract_rimi_product_containers(html_data: BeautifulSoup) -> Optional[Beauti
         raise ValueError("No product data found: Rimi")
     
 
-def check_no_results(html_data: BeautifulSoup):
+def check_no_results(html_data: BeautifulSoup) -> bool:
     error_page = html_data.find("h1", class_="error-page__heading")
     if error_page.get_text(strip=True) == "Prekė nerasta":
         return True
@@ -140,7 +140,7 @@ def parse_rimi_data(product_data: BeautifulSoup, amount=5) -> list:
     return item_list
 
 
-def get_rimi(search_item):
+def get_rimi(search_item: str) -> list:
     page_data = grab_rimi_html(search_item)
     try:
         container_data = extract_rimi_product_containers(page_data)
