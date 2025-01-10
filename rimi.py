@@ -21,13 +21,21 @@ def grab_rimi_html(item) -> Optional[BeautifulSoup]:
         raise ValueError("Empty Return or Invalid HTML: Rimi")
 
 
-def extract_rimi_product_containers(raw_data: BeautifulSoup) -> Optional[BeautifulSoup]:
-    product_containers = raw_data.find_all("div", class_="js-product-container card -horizontal-for-mobile")
+def extract_rimi_product_containers(html_data: BeautifulSoup) -> Optional[BeautifulSoup]:
+    product_containers = html_data.find_all("div", class_="js-product-container card -horizontal-for-mobile")
     if product_containers:
         return product_containers
     else:
         raise ValueError("No product data found: Rimi")
     
+
+def check_no_results(html_data: BeautifulSoup):
+    error_page = html_data.find("h1", class_="error-page__heading")
+    if error_page.get_text(strip=True) == "Prekė nerasta":
+        return True
+    else:
+        return False
+   
 
 def get_unit_price(product_container: BeautifulSoup) -> Optional[list]:
     price_per = product_container.find("p", class_="card__price-per")
@@ -134,10 +142,17 @@ def parse_rimi_data(product_data: BeautifulSoup, amount=5) -> list:
 
 def get_rimi(search_item):
     page_data = grab_rimi_html(search_item)
-    container_data = extract_rimi_product_containers(page_data)
+    try:
+        container_data = extract_rimi_product_containers(page_data)
+    except ValueError as e:
+        if check_no_results(page_data):
+            print(f"No results found for '{search_item}': Rimi")
+        else:
+            print(f"ERROR: {e}")
+        return []
     product_list = parse_rimi_data(container_data)
     return product_list
-    # print_html(container_data)
+    # print_html(page_data)
 
 
 def print_html(html):
