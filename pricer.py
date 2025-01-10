@@ -28,7 +28,7 @@ def main():
         if len(search_list) > max_items:
             raise ValueError(f"Error: At most {max_items} items may be searched per instance.")
         print("Searching for items...")
-            
+        search_results = []
         for item in search_list:
             barbora_list = get_barbora(item, args.results)
             print(f"\nBarbora search '{item}' completed")
@@ -36,17 +36,28 @@ def main():
             print(f"Rimi search '{item}' completed\n")
             if barbora_list or rimi_list:
                 cheapest_items, options = process_results(barbora_list + rimi_list, args.order)
-                print(cheapest_items)
-                print(options)
+                search_results.append(f"Results for '{item}':\n")
+                search_results.append(cheapest_items)
+                search_results.append(options)
             else:
-                print(f"No Results for search: '{item}'")
+                search_results.append(f"No Results for search: '{item}'")
+            if not args.save:
+                list(map(print, search_results))
             time.sleep(random.randint(2,5))
+        if args.save:
+            write_results_file(args.save, search_results)
 
 
 def read_item_file(file_path: str) -> list:
     with open(file_path, "r") as f:
         items = [line.strip() for line in f]
     return items
+
+
+def write_results_file(file_path: str, results: list):
+    with open(file_path, "w") as f:
+        f.write("\n".join(results))
+    print(f"Results saved successfully to: {file_path}")    
 
 
 if __name__ == "__main__":

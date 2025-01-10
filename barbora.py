@@ -43,8 +43,7 @@ def check_no_results(html_data: BeautifulSoup) -> bool:
 
 def parse_barbora_data(products: List[dict], amount=5) -> list:
     '''
-    amount is for future proofing if functionality to allow the user to choose how many items to grab is added.
-    Would need to be capped at 52 because that's how many items are returned per page
+    Amount will self-cap at 52 (page cap) or fewer if there are not many results.
     '''
     items = []
     i = 0

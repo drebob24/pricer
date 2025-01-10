@@ -106,8 +106,7 @@ def organize_rimi_data(name: str, list_price: float, retail_price: float, unit_p
 
 def parse_rimi_data(product_data: BeautifulSoup, amount=5) -> list:
     '''
-    amount is for future proofing if functionality to allow the user to choose how many items to grab is added.
-    Would need to be capped at 20 because that's how many items are returned per page
+    Amount will self-cap at 20 (page cap) or fewer if there are not many results.
     '''
     i = 0
     item_list = []
