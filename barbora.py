@@ -1,6 +1,7 @@
 import requests
 import json
 import re
+import time
 from bs4 import BeautifulSoup
 from typing import List, Optional
 
