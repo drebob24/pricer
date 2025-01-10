@@ -19,12 +19,18 @@ def main():
     '''
     args = get_args()
 
-    if args.search and args.items:
+    if args.items:
+        search_list = args.items
+    if args.file:
+        search_list = read_item_file(args.file)
+
+    if args.search:
         max_items = 10
-        if len(args.items) > max_items:
+        if len(search_list) > max_items:
             raise ValueError(f"Error: At most {max_items} items may be searched per instance.")
+        print("Searching for items...")
             
-        for item in args.items:
+        for item in search_list:
             barbora_list = get_barbora(item)
             print(f"\nBarbora search '{item}' completed")
             rimi_list = get_rimi(item)
@@ -36,6 +42,12 @@ def main():
             else:
                 print(f"No Results for search: '{item}'")
             time.sleep(random.randint(2,5))
+
+
+def read_item_file(file_path: str) -> list:
+    with open(file_path, "r") as f:
+        items = [line.strip() for line in f]
+    return items
 
 
 if __name__ == "__main__":
