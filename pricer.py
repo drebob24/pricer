@@ -9,7 +9,6 @@ import random
 def main():
     '''
     FURTHER FUNCTIONS:
-    -Import list of items
     -Save watch list
         -Track if price goes up/down from last fetch
         -Save history of price data?
@@ -31,9 +30,9 @@ def main():
         print("Searching for items...")
             
         for item in search_list:
-            barbora_list = get_barbora(item)
+            barbora_list = get_barbora(item, args.results)
             print(f"\nBarbora search '{item}' completed")
-            rimi_list = get_rimi(item)
+            rimi_list = get_rimi(item, args.results)
             print(f"Rimi search '{item}' completed\n")
             if barbora_list or rimi_list:
                 cheapest_items, options = process_results(barbora_list + rimi_list, args.order)

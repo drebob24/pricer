@@ -1,6 +1,5 @@
 import requests
 import re
-import time
 from bs4 import BeautifulSoup
 from typing import Optional
 
@@ -140,7 +139,7 @@ def parse_rimi_data(product_data: BeautifulSoup, amount=5) -> list:
     return item_list
 
 
-def get_rimi(search_item: str) -> list:
+def get_rimi(search_item: str, results: int) -> list:
     page_data = grab_rimi_html(search_item)
     try:
         container_data = extract_rimi_product_containers(page_data)
@@ -150,7 +149,7 @@ def get_rimi(search_item: str) -> list:
         else:
             print(f"ERROR: {e}")
         return []
-    product_list = parse_rimi_data(container_data)
+    product_list = parse_rimi_data(container_data, results)
     return product_list
     # print_html(page_data)
 

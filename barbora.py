@@ -1,7 +1,6 @@
 import requests
 import json
 import re
-import time
 from bs4 import BeautifulSoup
 from typing import List, Optional
 
@@ -72,7 +71,7 @@ def parse_barbora_data(products: List[dict], amount=5) -> list:
     return items
 
 
-def get_barbora(search_item: str) -> list:
+def get_barbora(search_item: str, results: int) -> list:
     page_data = grab_barbora_products(search_item)
     try:
         product_list = extract_barbora_items(page_data)
@@ -82,7 +81,7 @@ def get_barbora(search_item: str) -> list:
         else:
             print(f"ERROR: {e}")
         return []
-    cleaned_list = parse_barbora_data(product_list)
+    cleaned_list = parse_barbora_data(product_list, results)
     # print_html(page_data)
     return cleaned_list
 

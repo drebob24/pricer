@@ -16,7 +16,7 @@ def get_args():
     item_group.add_argument(
         "-f",
         "--file",
-        type=str,
+        type=validate_input_file,
         help="Accepts a file path to load in a list of items. Expects a txt file.\n Currently limited to 10 items",
     )   
     parser.add_argument(
@@ -31,5 +31,23 @@ def get_args():
         default="unit",
         help='Choose "list" to sort by the listed item price (5 EUR/1 bag(30g)), or unit price to sort by the per per unit (ex: 10 EUR/kg).\nDefault is unit price',
     )
-
+    parser.add_argument(
+        "--results",
+        type=int,
+        default=3,
+        help="Expects an int value for how many results to return. Warning, the more results you add the more likely you are to find unwanted items.\nDefault amount is 3."
+    )
+    parser.add_argument(
+        "--save",
+        type=str,
+        help = "Saves results to designated file path in a txt file."
+    )
+      
     return parser.parse_args()
+
+
+def validate_input_file(filename):
+    if filename.endswith("txt"):
+        return filename
+    else:
+        raise argparse.ArgumentTypeError(f"{filename} is not a valid .txt file")
