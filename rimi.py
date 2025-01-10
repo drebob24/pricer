@@ -75,6 +75,17 @@ def get_card_price(product_container: BeautifulSoup) -> float:
     return float(euro + "." + cents)
 
 
+def get_discount_unit_price(product_container: BeautifulSoup) -> float:
+        price_per = product_container.find("div", class_="price-per-unit")
+        if price_per:
+            unit_price = price_per.get_text(strip=True)
+            unit_price = re.search(r"(\d+,\d+)", unit_price).group(1)
+            unit_price = unit_price.replace(",", ".")
+            return float(unit_price)
+        else:
+            raise ValueError("Discount Unit Price expected but not found: Rimi")
+
+
 def organize_rimi_data(name: str, list_price: float, retail_price: float, unit_price: list) -> dict:
     item = {}
     item["title"] = name
@@ -104,6 +115,7 @@ def parse_rimi_data(product_data: BeautifulSoup, amount=5) -> list:
         listed_price = get_discount_price(product)
         if listed_price:
             retail_price = get_card_price(product)
+            per_price[0] = get_discount_unit_price(product)
             on_sale = True
         else:
             retail_price = get_old_price(product)
@@ -125,14 +137,17 @@ def get_rimi(search_item):
     container_data = extract_rimi_product_containers(page_data)
     product_list = parse_rimi_data(container_data)
     return product_list
+    # print_html(container_data)
 
 
 def print_html(html):
     '''
     Currently only used for troubleshooting, to be removed?
     '''
-    with open("rimi_items.json", "w") as save:
-        json.dump(html, save, indent=2)
+    # with open("rimi_items.json", "w") as save:
+    #     json.dump(html, save, indent=2)
+    with open("rimi_container.html", "w") as f:
+        f.write("".join(str(tag) for tag in html))
 
 
 if __name__ == "__main__":
