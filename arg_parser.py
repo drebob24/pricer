@@ -39,8 +39,8 @@ def get_args():
     )
     parser.add_argument(
         "--save",
-        type=str,
-        help = "Saves results to designated file path."
+        choices=["txt", "csv"],
+        help = "Saves results as either text, or in a csv style."
     )
       
     return parser.parse_args()

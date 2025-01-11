@@ -1,11 +1,14 @@
-def process_results(results_list, sort_order):
+def process_results(results_list, search_input, sort_order, output):
     merged_list = sort_lists(results_list, sort_order)
     merged_list = check_for_sales(merged_list)
+    if output == "csv":
+        merged_list = add_search_field(merged_list, search_input)
+        return merged_list
     cheapest_list, options_list = split_cheapest(merged_list, sort_order)
     cheapest_list, options_list = generate_item_text(cheapest_list), generate_item_text(options_list)
     cheapest_text = create_cheapest_output(cheapest_list)
     options_text = create_options_output(options_list)
-    return cheapest_text, options_text
+    return cheapest_text + options_text
 
 
 def sort_lists(item_list, order):
@@ -54,11 +57,17 @@ def get_discount(item):
 
 def create_cheapest_output(items):
     if len(items) == 1:
-        return f"The cheapest item is:\n{"\n".join(items)}\n"
+        return f"The cheapest item is:\n{items[0]}\n"
     else:
         return f"The cheapest items are:\n{"\n".join(items)}\n"
     
 
 def create_options_output(options):
     options_text = "\n".join(options)
-    return f"Other options:\n{options_text}"
+    return f"\nOther options:\n{options_text}"
+
+
+def add_search_field(item_list, search_term):
+    for item in item_list:
+        item["search"] = search_term
+    return item_list

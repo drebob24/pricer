@@ -2,6 +2,7 @@ from arg_parser import get_args
 from barbora import get_barbora
 from rimi import get_rimi
 from process_results import process_results
+from file_handling import read_item_file, write_results_txt, write_results_csv
 import time
 import random
 
@@ -35,29 +36,26 @@ def main():
             rimi_list = get_rimi(item, args.results)
             print(f"Rimi search '{item}' completed\n")
             if barbora_list or rimi_list:
-                cheapest_items, options = process_results(barbora_list + rimi_list, args.order)
+                sorted_results = process_results(barbora_list + rimi_list, item, args.order, args.save)
+                if args.save == "csv":
+                    search_results += sorted_results
+                    time.sleep(random.randint(2,5))
+                    continue
                 search_results.append(f"Results for '{item}':\n")
-                search_results.append(cheapest_items)
-                search_results.append(options)
+                search_results.append(sorted_results)
             else:
                 search_results.append(f"No Results for search: '{item}'")
             if not args.save:
-                list(map(print, search_results))
+                print("\n".join(search_results))
             time.sleep(random.randint(2,5))
-        if args.save:
-            write_results_file(args.save, search_results)
 
 
-def read_item_file(file_path: str) -> list:
-    with open(file_path, "r") as f:
-        items = [line.strip() for line in f]
-    return items
+    if args.save == "txt":
+        write_results_txt(search_results)
 
 
-def write_results_file(file_path: str, results: list):
-    with open(file_path, "w") as f:
-        f.write("\n".join(results))
-    print(f"Results saved successfully to: {file_path}")    
+    if args.save == "csv":
+        write_results_csv(search_results)
 
 
 if __name__ == "__main__":
