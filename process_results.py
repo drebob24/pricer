@@ -8,7 +8,7 @@ def process_results(results_list, search_input, sort_order, output):
     cheapest_list, options_list = generate_item_text(cheapest_list), generate_item_text(options_list)
     cheapest_text = create_cheapest_output(cheapest_list)
     options_text = create_options_output(options_list)
-    return cheapest_text + options_text
+    return [cheapest_text + options_text]
 
 
 def sort_lists(item_list, order):
