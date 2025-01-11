@@ -38,13 +38,17 @@ def generate_item_text(item_list, mode):
     if mode == "search":
         return [format_search_item(item) for item in item_list]
     if mode == "total":
-        barbora = ["Babora:"]
-        rimi = ["Rimi:"]
+        barbora = []
+        rimi = []
         for item in item_list:
             if item["store"] == "Barbora":
                 barbora += [format_total_item(item)]
             if item["store"] == "Rimi":
                 rimi += [format_total_item(item)]
+        if barbora:
+            barbora = ["Babora:"] + barbora
+        if rimi:
+            rimi = ["Rimi:"] + rimi
         return barbora + rimi
 
 
