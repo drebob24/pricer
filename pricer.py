@@ -45,24 +45,25 @@ def handle_item_search(args, search_list):
     print("Searching for items...")
     search_results = []
     for item in search_list:
-        barbora_list = get_barbora(item, args.results)
-        print(f"\nBarbora search '{item}' completed")
-        rimi_list = get_rimi(item, args.results)
-        print(f"Rimi search '{item}' completed\n")
-        if barbora_list or rimi_list:
-            sorted_results = process_results(barbora_list + rimi_list, item, args.order, args.save)
-            if args.save == "csv":
-                search_results += sorted_results
-                time.sleep(random.randint(2,5))
-                continue
-            search_results.append(f"Results for '{item}':\n")
-            search_results.append(sorted_results)
-        else:
-            if not args.save =="csv":
-                search_results.append(f"No Results for search: '{item}'")
+        search_results += get_search_results(item, args)
+        if not args.save == "csv":
+            search_results = [f"Results for '{item}':\n"] + search_results
         if not args.save:
             print("\n".join(search_results))
         time.sleep(random.randint(2,5))
+
+
+def get_search_results(item: str, args) -> list:
+    barbora_list = get_barbora(item, args.results)
+    print(f"\nBarbora search '{item}' completed")
+    rimi_list = get_rimi(item, args.results)
+    print(f"Rimi search '{item}' completed\n")
+    if barbora_list or rimi_list:
+        return [process_results(barbora_list + rimi_list, item, args.order, args.save)]
+    elif args.save == "csv":
+        return []
+    else:
+        return [f"No Results for search: '{item}'"]
 
 
 if __name__ == "__main__":
