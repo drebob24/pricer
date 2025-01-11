@@ -2,14 +2,28 @@ import csv
 import os
 
 
+def get_search_list(args):
+    if args.items:
+        return args.items
+    if args.file:
+        return read_item_file(args.file)
+
+
 def read_item_file(file_path: str) -> list:
     with open(file_path, "r") as file:
         items = [line.strip() for line in file]
     return items
 
 
+def save_results(search_results: list, filetype):
+    if filetype == "txt":
+        write_results_txt(search_results)
+    if filetype == "csv":
+        write_results_csv(search_results)
+
+
 def write_results_txt(results: list):
-    with open("Results/search_results.txt", "w", newline='') as file:
+    with open("Results/search_results.txt", "w", newline="") as file:
         file.write("\n".join(results))
     print(f"Results saved successfully to: Results/search_results.txt")
 

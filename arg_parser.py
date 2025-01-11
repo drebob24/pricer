@@ -4,16 +4,18 @@ import sys
 
 def validate_args(args):
     if args.compare and args.save == "csv":
-        sys.exit("Error: Saving as CSV is not compatible with --total. Please choose a different save option. (Exit Code 2)")
+        sys.exit(
+            "Error: Saving as CSV is not compatible with --total. Please choose a different save option. (Exit Code 2)"
+        )
 
 
 def get_args():
     parser = argparse.ArgumentParser(
         description="Accepts item(s) and returns a list of products from different stores sorted by price."
     )
-    
+
     item_group = parser.add_mutually_exclusive_group(required=True)
-       
+
     item_group.add_argument(
         "--items",
         type=str,
@@ -40,9 +42,9 @@ def get_args():
         "--compare",
         type=str,
         choices=["together", "seperate"],
-        help="Run a total cost comparison either combining prices across both stores with 'together, or 'seperate' gives total cost per store seperately."
+        help="Run a total cost comparison either combining prices across both stores with 'together, or 'seperate' gives total cost per store seperately.",
     )
-    
+
     parser.add_argument(
         "--order",
         type=str,
@@ -54,15 +56,15 @@ def get_args():
         "--results",
         type=int,
         default=3,
-        help="Expects an int value for how many results to return. Results will also be limited by what the source returns.\nWarning, the more results you add the more likely you are to find unwanted items.\nDefault amount is 3."
+        help="Expects an int value for how many results to return. Results will also be limited by what the source returns.\nWarning, the more results you add the more likely you are to find unwanted items.\nDefault amount is 3.",
     )
     parser.add_argument(
         "--save",
         type=str,
         choices=["txt", "csv"],
-        help = "Saves results as either TXT, or in a CSV. CSV is not compatible with compare mode due to the resulting data."
+        help="Saves results as either TXT, or in a CSV. CSV is not compatible with compare mode due to the resulting data.",
     )
-    
+
     args = parser.parse_args()
     validate_args(args)
     return args
