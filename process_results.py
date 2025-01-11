@@ -1,17 +1,19 @@
-def process_results(results_list, search_input, sort_order, output):
-    merged_list = sort_lists(results_list, sort_order)
-    merged_list = check_for_sales(merged_list)
-    if output == "csv":
-        merged_list = add_search_field(merged_list, search_input)
-        return merged_list
-    cheapest_list, options_list = split_cheapest(merged_list, sort_order)
-    cheapest_list, options_list = generate_item_text(cheapest_list), generate_item_text(options_list)
+def process_results(results_list, search_input, args):
+    sorted_list = sort_results(results_list, args.order)
+    sorted_list = check_for_sales(sorted_list)
+    if args.save == "csv" or (args.mode == "total" and args.compare == "seperate"):
+        sorted_list = add_search_field(sorted_list, search_input)
+        return sorted_list
+    cheapest_list, options_list = split_cheapest(sorted_list, args.order)
+    if args.mode == "total" and args.compare == "together":
+        return add_search_field(cheapest_list, search_input)
+    cheapest_list, options_list = generate_item_text(cheapest_list, args.mode), generate_item_text(options_list, args.mode)
     cheapest_text = create_cheapest_output(cheapest_list)
     options_text = create_options_output(options_list)
     return [cheapest_text + options_text]
 
 
-def sort_lists(item_list, order):
+def sort_results(item_list, order):
     if order == "list":
         sorted_list = sorted(item_list, key=lambda x: (x["list_price"],
                                                             x["unit_price"],
@@ -32,15 +34,34 @@ def split_cheapest(item_list, order):
     return item_list[0:i], item_list[i:]
 
 
-def generate_item_text(item_list):
-    text_list = []
-    for item in item_list:
-        if item["on_sale"]:
-            item_text = f"{item["title"]}:\n{item["list_price"]} € ({item["unit_price"]} €/{item["unit"]}) at {item["store"]} -{get_discount(item)}% SALE"
-        else:
-            item_text = f"{item["title"]}:\n{item["list_price"]} € ({item["unit_price"]} €/{item["unit"]}) at {item["store"]}"
-        text_list.append(item_text)
-    return text_list
+def generate_item_text(item_list, mode):
+    if mode == "search":
+        return [format_search_item(item) for item in item_list]
+    if mode == "total":
+        barbora = ["Babora:"]
+        rimi = ["Rimi:"]
+        for item in item_list:
+            if item["store"] == "Barbora":
+                barbora += [format_total_item(item)]
+            if item["store"] == "Rimi":
+                rimi += [format_total_item(item)]
+        return barbora + rimi
+
+
+def format_search_item(item):
+    if item["on_sale"]:
+        sale_info = f" -{get_discount(item)}% SALE" 
+    else:
+        sale_info = ""
+    return f"{item['title']}:\n{item['list_price']} € ({item['unit_price']} €/{item['unit']}) at {item['store']}{sale_info}"
+
+
+def format_total_item(item):
+    if item["on_sale"]:
+        sale_info = f" -{get_discount(item)}% SALE" 
+    else:
+        sale_info = ""
+    return f"{item['search']}: {item['title']}: {item['list_price']} € ({item['unit_price']} €/{item['unit']}){sale_info}"
 
 
 def check_for_sales(item_list):
