@@ -23,10 +23,10 @@ def main():
     if args.mode == "search":
         search_results = handle_item_search(search_list, args)
         save_results(search_results, args.save)
-    if args.mode == "total":
+    if args.compare:
         search_results = handle_item_search(search_list, args)
         cost_data = handle_cost_comparison(search_results, args)
-        report = generate_cost_report(cost_data, args.mode)
+        report = generate_cost_report(cost_data, args)
         if args.save:
             save_results(report, args.save)
         else:
@@ -59,7 +59,7 @@ def handle_item_search(search_list: list, args) -> list:
         if not args.save == "csv" and args.mode == "search":
             search_results += [f"\nResults for '{item}':\n"]
         search_results += get_search_results(item, args)
-        if not args.save and not args.mode == "total":
+        if not args.save and not args.compare:
             print("\n".join(search_results))
             search_results = []
         if index < len(search_list) - 1:
@@ -76,7 +76,7 @@ def get_search_results(item: str, args) -> list:
     print(f"Rimi search '{item}' completed")
     if barbora_list or rimi_list:
         return process_results(barbora_list + rimi_list, item, args)
-    elif args.save == "csv" or args.mode == "total":
+    elif args.save == "csv" or args.compare:
         return []
     else:
         return [f"No Results for search: '{item}'"]
@@ -84,11 +84,13 @@ def get_search_results(item: str, args) -> list:
 
 def handle_cost_comparison(item_list, args):
     if args.compare == "together":
-        shopping_data = [{
-            "store": "both",
-            "cost": calculate_together_cost(item_list),
-            "items": item_list
-        }]  
+        shopping_data = [
+            {
+                "store": "both",
+                "cost": calculate_together_cost(item_list),
+                "items": item_list,
+            }
+        ]
         return shopping_data
     if args.compare == "seperate":
         return calculate_seperate_cost(item_list)
@@ -108,24 +110,27 @@ def calculate_together_cost(cheapest_list: list) -> float:
     return cost
 
 
-def generate_cost_report(cost_data: list, mode: str) -> list:
+def generate_cost_report(cost_data: list, args) -> list:
     report = []
-    # cheapest_cost = min(cost_data, key=lambda x: x["cost"])
     sorted_data = sorted(cost_data, key=lambda x: x["cost"])
-    report += [f"The Cheapest Total Cost for the Shopping List is: {sorted_data[0]["cost"]} €"]
+    report += [
+        f"The Cheapest Total Cost for the Shopping List is: {sorted_data[0]["cost"]} €"
+    ]
     if sorted_data[0]["store"] != "both":
         report[-1] += f" from {sorted_data[0]["store"]}."
-        report += [f"Total Cost is {sorted_data[1]["cost"]} € at {sorted_data[1]["store"]}."]
+        report += [
+            f"Total Cost is {sorted_data[1]["cost"]} € at {sorted_data[1]["store"]}."
+        ]
     for data in sorted_data:
-        report += generate_item_text(data["items"], mode)
+        report += generate_item_text(data["items"], args)
     return report
 
 
 def calculate_seperate_cost(results):
-    '''
+    """
     Results list should already be sorted by cheapest price, so need the first instance of an item
     per each store per search.
-    '''
+    """
     store_prices = [
         {
             "store": "Barbora",
@@ -153,7 +158,7 @@ def calculate_seperate_cost(results):
             store_prices[1]["items"].append(item)
             rimi_found = True
     return store_prices
-    
+
 
 if __name__ == "__main__":
     main()

@@ -1,4 +1,10 @@
 import argparse
+import sys
+
+
+def validate_args(args):
+    if args.compare and args.save == "csv":
+        sys.exit("Error: Saving as CSV is not compatible with --total. Please choose a different save option. (Exit Code 2)")
 
 
 def get_args():
@@ -7,34 +13,36 @@ def get_args():
     )
     
     item_group = parser.add_mutually_exclusive_group(required=True)
-    
+       
     item_group.add_argument(
         "--items",
         type=str,
         nargs="+",
-        help="Accepts a list of items. Ex: --items item1 item2 item3\n Currently limited to 10 items.",
+        help="Accepts a list of string values. Ex: --items item1 item2 item3\n Currently limited to 10 items.",
     )
     item_group.add_argument(
         "-f",
         "--file",
         type=validate_input_file,
         help="Accepts a file path to load in a list of items. Expects a txt file.\n Currently limited to 10 items.",
-    )   
-    parser.add_argument(
+    )
+
+    feature_group = parser.add_mutually_exclusive_group(required=True)
+
+    feature_group.add_argument(
         "-m",
         "--mode",
         type=str,
-        choices=["search", "total"],
-        default="search",
-        help="Choose between a basic search and return of results 'search' or running a total cost comparison for the whole list 'total'.",
+        choices=["search"],
+        help="Runs a basic search and return results mode for each individual item.",
     )
-    parser.add_argument(
+    feature_group.add_argument(
         "--compare",
         type=str,
         choices=["together", "seperate"],
-        default="together",
-        help="Set how 'price' mode finds the cheapest total cost. 'together' uses both stores together, 'seperate' gives total cost per store seperately."
+        help="Run a total cost comparison either combining prices across both stores with 'together, or 'seperate' gives total cost per store seperately."
     )
+    
     parser.add_argument(
         "--order",
         type=str,
@@ -52,10 +60,12 @@ def get_args():
         "--save",
         type=str,
         choices=["txt", "csv"],
-        help = "Saves results as either text, or in a csv style."
+        help = "Saves results as either TXT, or in a CSV. CSV is not compatible with compare mode due to the resulting data."
     )
-      
-    return parser.parse_args()
+    
+    args = parser.parse_args()
+    validate_args(args)
+    return args
 
 
 def validate_input_file(filename):

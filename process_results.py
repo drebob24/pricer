@@ -1,13 +1,13 @@
 def process_results(results_list, search_input, args):
     sorted_list = sort_results(results_list, args.order)
     sorted_list = check_for_sales(sorted_list)
-    if args.save == "csv" or (args.mode == "total" and args.compare == "seperate"):
+    if args.save == "csv" or args.compare == "seperate":
         sorted_list = add_search_field(sorted_list, search_input)
         return sorted_list
     cheapest_list, options_list = split_cheapest(sorted_list, args.order)
-    if args.mode == "total" and args.compare == "together":
+    if args.compare == "together":
         return add_search_field(cheapest_list, search_input)
-    cheapest_list, options_list = generate_item_text(cheapest_list, args.mode), generate_item_text(options_list, args.mode)
+    cheapest_list, options_list = generate_item_text(cheapest_list, args), generate_item_text(options_list, args)
     cheapest_text = create_cheapest_output(cheapest_list)
     options_text = create_options_output(options_list)
     return [cheapest_text + options_text]
@@ -34,10 +34,8 @@ def split_cheapest(item_list, order):
     return item_list[0:i], item_list[i:]
 
 
-def generate_item_text(item_list, mode):
-    if mode == "search":
-        return [format_search_item(item) for item in item_list]
-    if mode == "total":
+def generate_item_text(item_list, args):
+    if args.compare:
         barbora = []
         rimi = []
         for item in item_list:
@@ -50,6 +48,8 @@ def generate_item_text(item_list, mode):
         if rimi:
             rimi = ["Rimi:"] + rimi
         return barbora + rimi
+    if args.mode == "search":
+        return [format_search_item(item) for item in item_list]
 
 
 def format_search_item(item):
