@@ -24,7 +24,8 @@ def handle_item_search(search_list: list, args) -> list:
         if index < len(search_list) - 1:
             time.sleep(random.randint(2, 5))
     if (args.save or args.watch) and not search_results:
-        sys.exit("No Results found. Nothing to output. (Exit Code: 1)")
+        print("No Results found. Nothing to output.")
+        sys.exit(1)
     return search_results
 
 

@@ -4,9 +4,14 @@ import sys
 
 def validate_args(args):
     if args.compare and args.save == "csv":
-        sys.exit(
-            "Error: Saving as CSV is not compatible with --total. Please choose a different save option. (Exit Code 2)"
-        )
+        print("Error: Saving as CSV is not compatible with --total. Please choose a different save option.")
+        sys.exit(2)
+    if args.search and not args.items and not args.file:
+        print("Error: Search feature requires an input of search items using either --items or --file.")
+        sys.exit(2)
+    if (args.watch == "add" or args.watch == "remove") and not args.items and not args.file:
+        print("Error: Adding or Removing items from watchlist requires an input of items using either --items or --file.")
+        sys.exit(2)
 
 
 def get_args():
@@ -47,7 +52,7 @@ def get_args():
     feature_group.add_argument(
         "--watch",
         type=str,
-        choices=["add", "update", "delete"]
+        choices=["add", "update", "remove"]
     )
     parser.add_argument(
         "--order",

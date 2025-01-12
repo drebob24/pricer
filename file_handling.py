@@ -2,7 +2,7 @@ import csv
 import os
 
 
-def get_search_list(args) -> list:
+def get_item_list(args) -> list:
     if args.items:
         return args.items
     if args.file:
@@ -13,15 +13,6 @@ def read_item_file(file_path: str) -> list:
     with open(file_path, "r") as file:
         items = [line.strip() for line in file]
     return items
-
-
-def delete_watchlist():
-    import os
-    if os.path.exists("watchlist.csv"):
-        os.remove("watchlist.csv")
-        print("Watchlist deleted.")
-    else:
-        print("Error: No watchlist file exists.") 
 
 
 def save_results(search_results: list, args):
