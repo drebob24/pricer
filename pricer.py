@@ -1,28 +1,24 @@
 from arg_parser import get_args
-from text_generation import generate_cost_report
 from file_handling import (
     get_item_list,
     save_results,
     load_watchlist,
 )
 from process_searches import handle_item_search
-from cost_comparison import handle_cost_comparison
-from watchlist_add import add_to_watchlist
-from watchlist_remove import remove_from_watchlist
+from cost_comparison import create_comparison_report
+from watchlist_add import add_to_watchlist, remove_items
 from watchlist_update import update_watchlist
 
 
 def main():
     args = get_args()
-    search_list = get_item_list(args)
+    item_input_list = get_item_list(args)
     if args.search:
-        search_results = handle_item_search(search_list, args)
+        search_results = handle_item_search(item_input_list, args)
         save_results(search_results, args)
 
     if args.compare:
-        search_results = handle_item_search(search_list, args)
-        cost_data = handle_cost_comparison(search_results, args)
-        report = generate_cost_report(cost_data, args)
+        report = create_comparison_report(item_input_list, args)
         if args.save:
             save_results(report, args)
         else:
@@ -35,9 +31,9 @@ def main():
             print("No watchlist.csv found, creating new one.")
             watchlist = []
         if args.watchlist == "add":
-            new_watchlist = add_to_watchlist(watchlist, args)
+            new_watchlist = add_to_watchlist(watchlist, item_input_list, args)
         if args.watchlist == "remove":
-            new_watchlist = remove_from_watchlist(watchlist, args)
+            new_watchlist = remove_items(watchlist, item_input_list)
         if args.watchlist == "update":
             new_watchlist = update_watchlist(watchlist, args)
         save_results(new_watchlist, args, "watchlist.csv", "watchlist")

@@ -1,3 +1,7 @@
+from text_generation import generate_cost_report
+from process_searches import handle_item_search
+
+
 def handle_cost_comparison(item_list, args):
     if args.compare == "together":
         shopping_data = [
@@ -58,3 +62,9 @@ def calculate_seperate_cost(results):
             store_prices[1]["items"].append(item)
             rimi_found = True
     return store_prices
+
+
+def create_comparison_report(search_list: list, args) -> list:
+    search_results = handle_item_search(search_list, args)
+    cost_data = handle_cost_comparison(search_results, args)
+    return generate_cost_report(cost_data, args)

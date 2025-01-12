@@ -1,6 +1,5 @@
 import sys
 from datetime import datetime
-from file_handling import get_item_list
 from process_searches import handle_item_search
 
 
@@ -30,9 +29,12 @@ def add_percentage_key(item_list: list) -> list:
     return item_list
 
 
-def add_to_watchlist(watchlist: list, args) -> list:
-    new_items = get_item_list(args)
-    new_items = check_if_exists(watchlist, new_items)
+def remove_items(item_list: list, delete_list: list) -> list:
+    return [item for item in item_list if item["search"] not in delete_list]
+
+
+def add_to_watchlist(watchlist: list, input_items: list, args) -> list:
+    new_items = check_if_exists(watchlist, input_items)
     search_results = handle_item_search(new_items, args)
     search_results = add_percentage_key(search_results)
     search_results = add_timestamp(search_results)
