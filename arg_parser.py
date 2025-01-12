@@ -14,9 +14,10 @@ def get_args():
         description="Accepts item(s) and returns a list of products from different stores sorted by price."
     )
 
-    item_group = parser.add_mutually_exclusive_group(required=True)
+    item_group = parser.add_mutually_exclusive_group()
 
     item_group.add_argument(
+        "-i",
         "--items",
         type=str,
         nargs="+",
@@ -32,10 +33,9 @@ def get_args():
     feature_group = parser.add_mutually_exclusive_group(required=True)
 
     feature_group.add_argument(
-        "-m",
-        "--mode",
-        type=str,
-        choices=["search"],
+        "-s",
+        "--search",
+        action="store_true",
         help="Runs a basic search and return results mode for each individual item.",
     )
     feature_group.add_argument(
@@ -44,7 +44,11 @@ def get_args():
         choices=["together", "seperate"],
         help="Run a total cost comparison either combining prices across both stores with 'together, or 'seperate' gives total cost per store seperately.",
     )
-
+    feature_group.add_argument(
+        "--watch",
+        type=str,
+        choices=["add", "update", "delete"]
+    )
     parser.add_argument(
         "--order",
         type=str,

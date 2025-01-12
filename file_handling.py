@@ -2,7 +2,7 @@ import csv
 import os
 
 
-def get_search_list(args):
+def get_search_list(args) -> list:
     if args.items:
         return args.items
     if args.file:
@@ -15,48 +15,93 @@ def read_item_file(file_path: str) -> list:
     return items
 
 
-def save_results(search_results: list, filetype):
-    if filetype == "txt":
-        write_results_txt(search_results)
-    if filetype == "csv":
-        write_results_csv(search_results)
+def delete_watchlist():
+    import os
+    if os.path.exists("watchlist.csv"):
+        os.remove("watchlist.csv")
+        print("Watchlist deleted.")
+    else:
+        print("Error: No watchlist file exists.") 
 
 
-def write_results_txt(results: list):
-    with open("Results/search_results.txt", "w", newline="") as file:
+def save_results(search_results: list, args):
+    if args.save == "txt":
+        write_results_txt(search_results, "Results/search_results.txt")
+    if args.save == "csv":
+        write_results_csv(search_results, "search", "Results/search_results.csv")
+    if args.watch:
+        write_results_csv(search_results, "watchlist", "watchlist.csv")
+
+
+def write_results_txt(results: list, file_path):
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    with open(file_path, "w+", newline="") as file:
         file.write("\n".join(results))
     print(f"Results saved successfully to: Results/search_results.txt")
 
 
-def write_results_csv(results: list):
-    file_path = "Results/search_results.csv"
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-    with open(file_path, "w") as file:
-        writer = csv.DictWriter(
-            file,
-            fieldnames=[
-                "search",
-                "title",
-                "list_price",
-                "unit_price",
-                "unit",
-                "on_sale",
-                "discount",
-                "store",
-            ],
-        )
+def write_results_csv(results: list, file_purpose: str, file_path: str):
+    if file_purpose == "search":
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        fields = [
+            "search",
+            "title",
+            "list_price",
+            "unit_price",
+            "unit",
+            "on_sale",
+            "discount",
+            "store",
+        ]
+    if file_purpose == "watchlist":
+        fields = [
+            "search",
+            "title",
+            "list_price",
+            "unit_price",
+            "unit",
+            "on_sale",
+            "discount",
+            "store",
+            "timestamp",
+        ]
+
+    with open(file_path, "w+") as file:
+        writer = csv.DictWriter(file, fieldnames=fields)
         writer.writeheader()
         for item in results:
-            writer.writerow(
+            row = {
+                "search": item["search"],
+                "title": item["title"],
+                "list_price": item["list_price"],
+                "unit_price": item["unit_price"],
+                "unit": item["unit"],
+                "on_sale": item["on_sale"],
+                "discount": item["discount"],
+                "store": item["store"],
+            }
+            if file_purpose == "watchlist":
+                row["timestamp"] = item["timestamp"]
+            writer.writerow(row)
+    print(f"Results saved successfully to: {file_path}")
+
+
+def load_watchlist(file_path: str) -> list:
+    items = []
+    with open(file_path, "r") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            items.append(
                 {
-                    "search": item["search"],
-                    "title": item["title"],
-                    "list_price": item["list_price"],
-                    "unit_price": item["unit_price"],
-                    "unit": item["unit"],
-                    "on_sale": item["on_sale"],
-                    "discount": item["discount"],
-                    "store": item["store"],
+                    "search": row["search"],
+                    "title": row["title"],
+                    "list_price": row["list_price"],
+                    "unit_price": row["unit_price"],
+                    "unit": row["unit"],
+                    "on_sale": row["on_sale"],
+                    "discount": row["discount"],
+                    "store": row["store"],
+                    "timestamp": row["timestamp"],
                 }
             )
-    print(f"Results saved successfully to: {file_path}")
+    return items

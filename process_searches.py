@@ -15,15 +15,15 @@ def handle_item_search(search_list: list, args) -> list:
     print("Searching for items...")
     search_results = []
     for index, item in enumerate(search_list):
-        if not args.save == "csv" and args.mode == "search":
+        if not args.save == "csv" and args.search and not args.watch:
             search_results += [f"\nResults for '{item}':\n"]
         search_results += get_search_results(item, args)
-        if not args.save and not args.compare:
+        if not args.save and not args.compare and not args.watch:
             print("\n".join(search_results))
             search_results = []
         if index < len(search_list) - 1:
             time.sleep(random.randint(2, 5))
-    if args.save and not search_results:
+    if (args.save or args.watch) and not search_results:
         sys.exit("No Results found. Nothing to output. (Exit Code: 1)")
     return search_results
 
@@ -35,7 +35,7 @@ def get_search_results(item: str, args) -> list:
     print(f"Rimi search '{item}' completed")
     if barbora_list or rimi_list:
         return process_results(barbora_list + rimi_list, item, args)
-    elif args.save == "csv" or args.compare:
+    elif args.save == "csv" or args.compare or args.watch:
         return []
     else:
         return [f"No Results for search: '{item}'"]
