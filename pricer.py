@@ -48,8 +48,10 @@ def main():
             update_results = handle_item_search(update_list, args)
             new_watchlist, history_data = compare_watchlist_data(watchlist, update_results)
             new_watchlist = add_timestamp(new_watchlist)
+            if args.store_history:
+                save_results(history_data, args, "historical_data.csv", "history")
 
-        save_results(new_watchlist, args)
+        save_results(new_watchlist, args, "watchlist.csv", "watchlist")
 
 
 def add_timestamp(item_list: list) -> list:

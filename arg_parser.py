@@ -4,13 +4,23 @@ import sys
 
 def validate_args(args):
     if args.compare and args.save == "csv":
-        print("Error: Saving as CSV is not compatible with --total. Please choose a different save option.")
+        print(
+            "Error: Saving as CSV is not compatible with --total. Please choose a different save option."
+        )
         sys.exit(2)
     if args.search and not args.items and not args.file:
-        print("Error: Search feature requires an input of search items using either --items or --file.")
+        print(
+            "Error: Search feature requires an input of search items using either --items or --file."
+        )
         sys.exit(2)
-    if (args.watch == "add" or args.watch == "remove") and not args.items and not args.file:
-        print("Error: Adding or Removing items from watchlist requires an input of items using either --items or --file.")
+    if (
+        (args.watch == "add" or args.watch == "remove")
+        and not args.items
+        and not args.file
+    ):
+        print(
+            "Error: Adding or Removing items from watchlist requires an input of items using either --items or --file."
+        )
         sys.exit(2)
 
 
@@ -52,7 +62,8 @@ def get_args():
     feature_group.add_argument(
         "--watch",
         type=str,
-        choices=["add", "update", "remove"]
+        choices=["add", "update", "remove"],
+        help="Create/Add to a watchlist using 'add' and either the --items or --file argument to pass in items. 'update' will update the watchlist with the optionn to store old data with the '--store-history' arg. Remove items from the watchlist with 'remove' and the --items or --file argument.",
     )
     parser.add_argument(
         "--order",
@@ -72,6 +83,11 @@ def get_args():
         type=str,
         choices=["txt", "csv"],
         help="Saves results as either TXT, or in a CSV. CSV is not compatible with compare mode due to the resulting data.",
+    )
+    parser.add_argument(
+        "--store-history",
+        action="store_true",
+        help="Flag to store historical data when updating watchlist with '--watch update'.",
     )
 
     args = parser.parse_args()

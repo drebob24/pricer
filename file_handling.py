@@ -15,13 +15,13 @@ def read_item_file(file_path: str) -> list:
     return items
 
 
-def save_results(search_results: list, args):
+def save_results(search_results: list, args, file_path="", mode=""):
     if args.save == "txt":
         write_results_txt(search_results, "Results/search_results.txt")
     if args.save == "csv":
         write_results_csv(search_results, "search", "Results/search_results.csv")
     if args.watch:
-        write_results_csv(search_results, "watchlist", "watchlist.csv")
+        write_results_csv(search_results, mode, file_path)
 
 
 def write_results_txt(results: list, file_path):
@@ -31,9 +31,11 @@ def write_results_txt(results: list, file_path):
     print(f"Results saved successfully to: Results/search_results.txt")
 
 
-def write_results_csv(results: list, file_purpose: str, file_path: str):
-    if file_purpose == "search":
+def write_results_csv(results: list, file_type: str, file_path: str):
+    add_header = True
+    if file_type == "search":
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        mode = "w+"
         fields = [
             "search",
             "title",
@@ -44,7 +46,8 @@ def write_results_csv(results: list, file_purpose: str, file_path: str):
             "discount",
             "store",
         ]
-    if file_purpose == "watchlist":
+    if file_type == "watchlist" or file_type =="history":
+        mode = "w+"
         fields = [
             "search",
             "title",
@@ -57,10 +60,14 @@ def write_results_csv(results: list, file_purpose: str, file_path: str):
             "percent_change",
             "timestamp",
         ]
+    if file_type == "history":
+        add_header = not os.path.isfile(file_path) or os.path.getsize(file_path) == 0
+        mode = "a"
 
-    with open(file_path, "w+") as file:
+    with open(file_path, mode) as file:
         writer = csv.DictWriter(file, fieldnames=fields)
-        writer.writeheader()
+        if add_header or mode == "w+":
+            writer.writeheader()
         for item in results:
             row = {
                 "search": item["search"],
@@ -72,7 +79,7 @@ def write_results_csv(results: list, file_purpose: str, file_path: str):
                 "discount": item["discount"],
                 "store": item["store"],
             }
-            if file_purpose == "watchlist":
+            if file_type == "watchlist" or file_type == "history":
                 row["percent_change"] = item["percent_change"]
                 row["timestamp"] = item["timestamp"]
             writer.writerow(row)
