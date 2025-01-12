@@ -56,7 +56,7 @@ def get_args():
         "-s",
         "--search",
         action="store_true",
-        help="Runs a basic search and return results mode for each individual item.",
+        help="Runs a basic search and return results for each individual item.",
     )
     feature_group.add_argument(
         "--compare",
