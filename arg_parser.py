@@ -14,7 +14,7 @@ def validate_args(args):
         )
         sys.exit(2)
     if (
-        (args.watch == "add" or args.watch == "remove")
+        (args.watchlist == "add" or args.watchlist == "remove")
         and not args.items
         and not args.file
     ):
@@ -60,7 +60,7 @@ def get_args():
         help="Run a total cost comparison either combining prices across both stores with 'together, or 'seperate' gives total cost per store seperately.",
     )
     feature_group.add_argument(
-        "--watch",
+        "--watchlist",
         type=str,
         choices=["add", "update", "remove"],
         help="Create/Add to a watchlist using 'add' and either the --items or --file argument to pass in items. 'update' will update the watchlist with the optionn to store old data with the '--store-history' arg. Remove items from the watchlist with 'remove' and the --items or --file argument.",

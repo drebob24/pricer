@@ -20,7 +20,7 @@ def save_results(search_results: list, args, file_path="", mode=""):
         write_results_txt(search_results, "Results/search_results.txt")
     if args.save == "csv":
         write_results_csv(search_results, "search", "Results/search_results.csv")
-    if args.watch:
+    if args.watchlist:
         write_results_csv(search_results, mode, file_path)
 
 
