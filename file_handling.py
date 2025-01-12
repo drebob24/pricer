@@ -54,6 +54,7 @@ def write_results_csv(results: list, file_purpose: str, file_path: str):
             "on_sale",
             "discount",
             "store",
+            "percent_change",
             "timestamp",
         ]
 
@@ -72,6 +73,7 @@ def write_results_csv(results: list, file_purpose: str, file_path: str):
                 "store": item["store"],
             }
             if file_purpose == "watchlist":
+                row["percent_change"] = item["percent_change"]
                 row["timestamp"] = item["timestamp"]
             writer.writerow(row)
     print(f"Results saved successfully to: {file_path}")
@@ -92,6 +94,7 @@ def load_watchlist(file_path: str) -> list:
                     "on_sale": row["on_sale"],
                     "discount": row["discount"],
                     "store": row["store"],
+                    "percent_change": row["percent_change"],
                     "timestamp": row["timestamp"],
                 }
             )
