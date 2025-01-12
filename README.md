@@ -40,6 +40,7 @@ This is largely a proof of concept program not intended for mass use since it is
 --store-history: Flag to store historical data when updating the watchlist with --watchlist update.
 
 **Example Commands**
+
 Search for items:
 python pricer.py --items apple banana --search
 
@@ -54,7 +55,7 @@ python pricer.py --watchlist update --store-history
 
 ## Limitations
 
-Most obviously since this relies on scraping, scaling to a more used program would run into results with http requests.
+Most obviously since this relies on scraping, scaling to a more used program would run into problems with http requests.
 Also any changes to the used web sources could easy break the program.
 
 Price Comparisons need to be made a lot more robust to fully work for a large shopping list. 
@@ -75,7 +76,8 @@ Add ability to track a specific product and not just items based off a search te
 
 Add "relevancy" field using either a python library to compare strings or potentially AI? Not sure how well AI handles Lithuanian.
 
-Specific code reworking:
-handle_item_search() could be cleaned up/split up a bit.
-process_results() should be reworked to only return json styled data for better modularity, then splitting it into strings is handled in another function.
+**Specific code reworking:**
 
+handle_item_search() could be cleaned up/split up a bit.
+
+process_results() should be reworked to only return json styled data for better modularity, then splitting it into strings is handled in another function.
