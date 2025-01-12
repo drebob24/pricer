@@ -1,5 +1,11 @@
 import csv
 import os
+import sys
+
+
+def parse_searches(item_list: list) -> list:
+    searches = set(item["search"] for item in item_list)
+    return list(searches)
 
 
 def get_item_list(args) -> list:
@@ -7,7 +13,14 @@ def get_item_list(args) -> list:
         return args.items
     if args.file:
         return read_item_file(args.file)
-
+    if args.search_watchlist:
+        try:
+            watchlist = load_watchlist("watchlist.csv")
+        except FileNotFoundError:
+            print("No watchlist.csv found.")
+            sys.exit(1)
+        return parse_searches(watchlist)
+    
 
 def read_item_file(file_path: str) -> list:
     with open(file_path, "r") as file:
@@ -46,7 +59,7 @@ def write_results_csv(results: list, file_type: str, file_path: str):
             "discount",
             "store",
         ]
-    if file_type == "watchlist" or file_type =="history":
+    if file_type == "watchlist" or file_type == "history":
         mode = "w+"
         fields = [
             "search",

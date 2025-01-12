@@ -2,8 +2,9 @@ from text_generation import generate_cost_report
 from process_searches import handle_item_search
 
 
-def handle_cost_comparison(item_list, args):
+def handle_cost_comparison(item_list: list, args) -> list:
     if args.compare == "together":
+        #data is formatted to match that of the seperate comparison
         shopping_data = [
             {
                 "store": "both",

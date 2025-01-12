@@ -34,7 +34,7 @@ def main():
             new_watchlist = add_to_watchlist(watchlist, item_input_list, args)
         if args.watchlist == "remove":
             new_watchlist = remove_items(watchlist, item_input_list)
-        if args.watchlist == "update":
+        if args.watchlist == "update" or args.search_watchlist:
             new_watchlist = update_watchlist(watchlist, args)
         save_results(new_watchlist, args, "watchlist.csv", "watchlist")
 

@@ -8,9 +8,9 @@ def validate_args(args):
             "Error: Saving as CSV is not compatible with --total. Please choose a different save option."
         )
         sys.exit(2)
-    if args.search and not args.items and not args.file:
+    if args.search and not args.items and not args.file and not args.search_watchlist:
         print(
-            "Error: Search feature requires an input of search items using either --items or --file."
+            "Error: Search feature requires an input of search items using either --items, --file, or --search-watchlist."
         )
         sys.exit(2)
     if (
@@ -43,6 +43,11 @@ def get_args():
         "--file",
         type=validate_input_file,
         help="Accepts a file path to load in a list of items. Expects a txt file.\n Currently limited to 10 items.",
+    )
+    item_group.add_argument(
+        "--search-watchlist",
+        action="store_true",
+        help="Load list of items from watchlist to perform search or compare."
     )
 
     feature_group = parser.add_mutually_exclusive_group(required=True)

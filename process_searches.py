@@ -7,6 +7,7 @@ from rimi import get_rimi
 
 
 def handle_item_search(search_list: list, args) -> list:
+    # max item limit to prevent pushing too many requests. 
     max_items = 10
     if len(search_list) > max_items:
         raise ValueError(
@@ -21,6 +22,7 @@ def handle_item_search(search_list: list, args) -> list:
         if not args.save and not args.compare and not args.watchlist:
             print("\n".join(search_results))
             search_results = []
+        # Sleep if not the last request to not rapidly pull requests
         if index < len(search_list) - 1:
             time.sleep(random.randint(2, 5))
     if (args.save or args.watchlist) and not search_results:

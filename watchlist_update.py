@@ -1,19 +1,22 @@
 from process_searches import handle_item_search
-from file_handling import save_results
+from file_handling import save_results, parse_searches
 from text_generation import generate_update_report
 from watchlist_add import add_timestamp
 
-def parse_searches(item_list: list) -> list:
-    searches = set(item["search"] for item in item_list)
-    return list(searches)
-
 
 def compare_watchlist_data(watchlist: list, updated_list: list) -> list:
+    '''
+    Debatable if comparing the list prices or unit prices is better.
+    Went with unit prices as otherwise you end up with results such that a 6 pack was decrease in price 
+    compared to a 10 pack.
+    Still would have issues comparing say something that is listed per kg, and something listed per vnt.
+    Compeltely accurace comparison would need to be much more robust. 
+    '''
     watchlist_search_list = [item["search"] for item in watchlist]
     for item in updated_list:
         index = watchlist_search_list.index(item["search"])
         item["percent_change"] = calculate_percentage(
-            item["list_price"], float(watchlist[index]["list_price"])
+            item["unit_price"], float(watchlist[index]["unit_price"])
         )
     return updated_list, watchlist
 

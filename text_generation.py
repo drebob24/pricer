@@ -3,14 +3,14 @@ def get_discount(item: dict) -> int:
     return int(round(discount_amount))
 
 
-def create_cheapest_output(items):
+def create_cheapest_output(items: list) -> str:
     if len(items) == 1:
         return f"The cheapest item is:\n{items[0]}\n"
     else:
         return f"The cheapest items are:\n{"\n".join(items)}\n"
 
 
-def create_options_output(options):
+def create_options_output(options: list) -> str:
     options_text = "\n".join(options)
     return f"\nOther options:\n{options_text}"
 
@@ -38,7 +38,7 @@ def generate_update_report(item_list: list, args) -> list:
     return report
 
 
-def generate_item_text(item_list, args):
+def generate_item_text(item_list: list, args) -> list:
     if args.compare:
         barbora = []
         rimi = []
@@ -58,7 +58,7 @@ def generate_item_text(item_list, args):
         return [format_update_item(item) for item in item_list]
 
 
-def format_search_item(item):
+def format_search_item(item: dict) -> str:
     if item["on_sale"]:
         sale_info = f" -{get_discount(item)}% SALE"
     else:
@@ -66,7 +66,7 @@ def format_search_item(item):
     return f"{item['title']}:\n{item['list_price']} € ({item['unit_price']} €/{item['unit']}) at {item['store']}{sale_info}"
 
 
-def format_total_item(item):
+def format_total_item(item: dict) -> str:
     if item["on_sale"]:
         sale_info = f" -{get_discount(item)}% SALE"
     else:
@@ -74,7 +74,7 @@ def format_total_item(item):
     return f"{item['search']}: {item['title']}: {item['list_price']} € ({item['unit_price']} €/{item['unit']}){sale_info}"
 
 
-def format_update_item(item):
+def format_update_item(item: dict) -> str:
     if item["on_sale"]:
         sale_info = f" -{get_discount(item)}% SALE"
     else:
@@ -82,7 +82,7 @@ def format_update_item(item):
     return f"{item['search']}: {item['title']}: {item['list_price']} € ({item['unit_price']} €/{item['unit']}){sale_info}\nPrice change: {item["percent_change"]}%"
 
 
-def create_results_text_list(cheapest_list, options_list, args):
+def create_results_text_list(cheapest_list: list, options_list: list, args) -> list:
     cheapest_list = generate_item_text(cheapest_list, args)
     options_list = generate_item_text(options_list, args)
     cheapest_text = create_cheapest_output(cheapest_list)
